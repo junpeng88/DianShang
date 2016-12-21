@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="myMapper.Search_Mapper">
+
+	<select id="select_sku_product_by_fenlei2" parameterType="String"
+		resultMap="skuMap">
+		select a.*,b.* ,a.id as productid
+		FROM
+		t_mall_product a,
+		t_mall_sku b
+		where a.id =
+		b.product_id
+		and
+		a.twoid=#{fenlei2_id}
+	</select>
+
+	<select id="select_attr_value_by_fenlei2" parameterType="String"
+		resultMap="attrMap">
+		select a.*,b.*,b.id as valueid from t_mall_attr
+		a,t_mall_value
+		b,t_mall_attr_value
+		c where a.Id =
+		c.attr_id and b.Id =
+		c.value_id and
+		a.Id = b.attr_id and
+		a.fenlei2_id = #{fenlei2_id}
+	</select>
+
+	<select id="select_sku_product_by_value" parameterType="Map"
+		resultMap="skuMap">
+		select b.*,c.*,c.id as productid from t_mall_attr_value a ,
+		t_mall_sku
+		b, t_mall_product c where a.sku_id = b.Id and b.product_id
+		=
+		c.Id and
+		c.twoid = #{fenlei2_id}
+		${sql}
+	</select>
+
+	<select id="select_object_sku" parameterType="String" resultMap="object_sku_Map">
+
+		select a.Id as sku_id ,a.sku_name , b.Id as product_id ,
+		b.pname,d.attr_id,d.value_id,e.attribute,CONCAT(f.`value`,f.value_name)
+		as valuename
+		from t_mall_sku a,t_mall_product b,t_mall_image c,
+		t_mall_attr_value
+		d,t_mall_attr e,t_mall_value f
+		where a.product_id =
+		b.Id and b.Id = c.product_id and a.Id = d.sku_id and
+		d.attr_id = e.Id
+		and d.value_id = f.Id and f.attr_id = e.Id
+		and a.Id = #{sku_id}
+	</select>
+
+	<resultMap type="myEntity.OBJECT_SKU" id="object_sku_Map">
+		<result property="sku_id" column="sku_id" />
+		<result property="sku_name" column="sku_name" />
+		<result property="pname" column="pname" />
+		<result property="product_id" column="product_id" />
+
+		<collection property="l_attr_value" ofType="myEntity.T_MALL_ATTR_VALUE"
+			autoMapping="true">
+
+		</collection>
+		<collection property="l_attr_value_name" ofType="myEntity.OBJECT_ATTR_VALUE"
+			autoMapping="true">
+
+		</collection>
+		<collection property="l_image" ofType="myEntity.T_MALL_IMAGE"
+			autoMapping="true">
+
+		</collection>
+
+	</resultMap>
+
+	<resultMap type="myEntity.T_MALL_ATTR" id="attrMap">
+		<result property="id" column="id" />
+		<result property="attribute" column="attribute" />
+		<result property="flag" column="flag" />
+		<result property="fenlei2_id" column="fenlei2_id" />
+		<result property="create_time" column="create_time" />
+		<collection property="lvalue" ofType="myEntity.T_MALL_VALUE">
+			<result property="id" column="valueid" />
+			<result property="flag" column="flag1" />
+			<result property="attr_id" column="attr_id" />
+			<result property="value" column="value" />
+			<result property="value_name" column="value_name" />
+			<result property="create_time" column="create_time1" />
+		</collection>
+	</resultMap>
+
+
+	<resultMap type="myEntity.T_MALL_SKU" id="skuMap">
+		<result property="id" column="id" />
+		<result property="sku_name" column="sku_name" />
+		<result property="product_id" column="product_id" />
+		<result property="kucun" column="kucun" />
+		<result property="price" column="price" />
+		<result property="create_time" column="create_time" />
+		<association property="product" javaType="myEntity.T_MALL_PRODUCT">
+			<result property="id" column="productid" />
+			<result property="pname" column="pname" />
+			<result property="oneid" column="oneid" />
+			<result property="twoid" column="twoid" />
+			<result property="tmid" column="tmid" />
+			<result property="pimage" column="pimage" />
+		</association>
+	</resultMap>
+
+</mapper>
+
+
+
+
